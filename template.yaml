@@ -1,0 +1,56 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: github-group-membership
+  title: Add or Remove People from a Group
+  description: Add or remove a user from a GitHub team inside your organization
+  tags: [github, access-management]
+spec:
+  owner: development
+  type: service
+
+  parameters:
+    - title: Group membership details
+      required: [system, group, action, username]
+      properties:
+        system:
+          title: System
+          type: string
+          description: GitHub organization
+          ui:field: GithubOrgPicker        # auto-fetches your orgs
+
+        group:
+          title: Group
+          type: string
+          description: Team inside the selected organization
+          ui:field: GithubTeamPicker       # auto-fetches teams of the chosen org
+
+        action:
+          title: Action
+          type: string
+          default: add
+          enum: [add, remove]
+          enumNames:
+            - Add user to the group
+            - Remove user from the group
+          ui:widget: radio
+
+        username:
+          title: Username or Email ID
+          type: string
+          description: GitHub username, or email address of the user
+
+  steps:
+    - id: membership
+      name: Update GitHub team membership
+      action: github:team:membership
+      input:
+        org: ${{ parameters.system }}
+        team: ${{ parameters.group }}
+        action: ${{ parameters.action }}
+        user: ${{ parameters.username }}
+
+  output:
+    text:
+      - title: Result
+        content: ${{ steps.membership.output.message }}

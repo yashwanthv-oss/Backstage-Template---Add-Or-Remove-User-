@@ -33,7 +33,6 @@ spec:
           enumNames:
             - Add user to the group
             - Remove user from the group
-          ui:widget: radio
 
         username:
           title: Username or Email ID
